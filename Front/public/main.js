@@ -21,7 +21,7 @@ const update = () => {
 
             clientsDiv.innerHTML += `
             <span class="card">
-                <div><b>${status === "ONLINE" ? "🟢" : "🔴"} ${client} (${status})</b></div>
+                <div><b>${status === "ONLINE" ? "💚" : "🔴"} ${client} (${status})</b></div>
                 <div class="divider"></div>
                 Last Ping ${new Date(lastPing)}<br>
                 Last Restart ${lastRestart === "never" ? "never" : new Date(lastRestart)}<br>
@@ -29,7 +29,7 @@ const update = () => {
             </span>
             `
             if (status === "OFFLINE") {
-                clientsDiv.firstElementChild.lastElementChild.remove()
+                clientsDiv.lastElementChild.lastElementChild.remove()
             }
         })
     })
