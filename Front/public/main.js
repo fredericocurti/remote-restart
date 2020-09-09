@@ -1,9 +1,11 @@
 let clientsDiv
 
 const onClickBtn = (client) => {
-    const date = new Date()
-    firebase.database().ref(`/clients/${client}/lastRestart`).set(date.toJSON())
-    update()
+    if (window.confirm(`Are you sure you want to restart ${client}?`)) {
+        const date = new Date()
+        firebase.database().ref(`/clients/${client}/lastRestart`).set(date.toJSON())
+        update()
+    }
 }
 
 const update = () => {
@@ -21,10 +23,10 @@ const update = () => {
 
             clientsDiv.innerHTML += `
             <span class="card">
-                <div><b>${status === "ONLINE" ? "💚" : "🔴"} ${client} (${status})</b></div>
+                <div><span>${status === "ONLINE" ? "💚" : "🔴"}</span><b> ${client} (${status})</b></div>
                 <div class="divider"></div>
-                Last Ping ${new Date(lastPing)}<br>
-                Last Restart ${lastRestart === "never" ? "never" : new Date(lastRestart)}<br>
+                Last Ping ${new Date(lastPing).toGMTString()}<br>
+                Last Restart ${lastRestart === "never" ? "never" : new Date(lastRestart).toGMTString()}<br>
                 <button onclick="onClickBtn('${client}')"> Restart </button>
             </span>
             `

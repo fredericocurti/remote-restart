@@ -15,20 +15,53 @@
   <script defer src="/__/firebase/init.js"></script>
 
   <style media="screen">
+    * {
+      color: white;
+    }
+
+    .lds-dual-ring {
+      display: inline-block;
+      margin: 0 auto;
+      width: 80px;
+      height: 80px;
+    }
+
+    .lds-dual-ring:after {
+      content: " ";
+      display: block;
+      width: 64px;
+      height: 64px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 6px solid #fff;
+      border-color: #fff transparent #fff transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
     body {
-      background: white;
+      background: #242424;
       color: rgba(0, 0, 0, 0.87);
       font-family: Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 375px) {
 
       body,
       #message {
         margin-top: 0;
-        background: white;
         box-shadow: none;
       }
     }
@@ -40,15 +73,18 @@
     .card {
       padding: 20px;
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
-      margin: 20px;
+      background: #303030;
       display: flex;
       flex-direction: column;
-      width: 33%;
       font-size: 10pt;
+      flex: 1;
+      margin: 10px;
+      min-width: 300px;
+      max-width: 300px;
+      border-radius: 10px;
     }
 
     #clients {
-      margin-top: 50px;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -58,20 +94,20 @@
       margin-top: 10px;
       max-width: 100px;
       align-self: flex-end;
+      background: black;
     }
 
     .divider {
-      border-bottom: 1px solid #AAAAAA;
-      margin-bottom: 5px;
+      border-bottom: 1px solid #c9c9c9;
+      margin: 10px 0;
     }
   </style>
 </head>
 
 <body>
   <p id="load">Firebase SDK Loading&hellip;</p>
-  <h1> Remote Reset </h1>
-  <div id="clients"></div>
-
+  <h1> Remote Restart </h1>
+  <div id="clients"><div class="lds-dual-ring"></div></div>
   <script src="./main.js"></script>
 </body>
 
