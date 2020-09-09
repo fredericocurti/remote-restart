@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remote Restart</title>
+
+  <!-- update the version number as needed -->
+  <script defer src="/__/firebase/7.19.1/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <script defer src="/__/firebase/7.19.1/firebase-auth.js"></script>
+  <script defer src="/__/firebase/7.19.1/firebase-database.js"></script>
+  <!-- initialize the SDK after all desired features are loaded -->
+  <script defer src="/__/firebase/init.js"></script>
+
+  <style media="screen">
+    body {
+      background: white;
+      color: rgba(0, 0, 0, 0.87);
+      font-family: Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (max-width: 600px) {
+
+      body,
+      #message {
+        margin-top: 0;
+        background: white;
+        box-shadow: none;
+      }
+    }
+
+    h1 {
+      padding: 20px;
+    }
+
+    .card {
+      padding: 20px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
+      margin: 20px;
+      display: flex;
+      flex-direction: column;
+      max-width: 50%;
+    }
+
+    #clients {
+      margin-top: 50px;
+      display: flex;
+      flex-direction: row;
+    }
+
+    button {
+      max-width: 100px;
+      align-self: flex-end;
+    }
+
+    .divider {
+      border-bottom: 1px solid #AAAAAA;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <p id="load">Firebase SDK Loading&hellip;</p>
+  <h1> Remote Reset </h1>
+  <div id="clients"></div>
+
+  <script src="./main.js"></script>
+</body>
+
+</html>
