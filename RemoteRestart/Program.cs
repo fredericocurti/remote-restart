@@ -3,11 +3,7 @@ using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -31,9 +27,9 @@ namespace RemoteRestart
             mnuExit.Click += new EventHandler(mnuExit_Click);
 
             Icon.ContextMenu = menu;
-            Icon.Text = "Remote Restart\nStatus: running";
+            Icon.Text = $"Remote Restart\nStatus: Running";
             Icon.Visible = true;
-            Icon.Icon = SystemIcons.Shield;
+            Icon.Icon = RemoteRestart.Resource.Icon;
         }
 
         public void Dispose()
@@ -54,6 +50,7 @@ namespace RemoteRestart
         public static string Path { get; set; } = $"clients/{Environment.MachineName}";
 
         public static ProcessIcon Pi { get; set; } = null;
+
         static void Main(string[] args)
         {
             if (args.Length == 1 && args[0] == "INSTALLER") { Process.Start(Application.ExecutablePath); return; }
@@ -98,6 +95,7 @@ namespace RemoteRestart
             while (true)
             {
                 await Client.SetAsync($"{Path}/lastPing", DateTime.Now);
+                Pi.Icon.Text = $"Remote Restart\nStatus: Running\nLast Ping: {DateTime.Now}";
                 Thread.Sleep(30000);
             }
         }
@@ -110,7 +108,13 @@ namespace RemoteRestart
             EventStreamResponse response = await Client.OnAsync($"{Path}/lastRestart", null, (sender, args, context) => {
                 if (ready)
                 {
-                    Process.Start("shutdown.exe", "-r -f -t 5");
+                    Process.Start("shutdown.exe", "-r -f -t 12");
+                    Thread.Sleep(2000);
+                    System.Windows.MessageBoxResult confirmResult = (System.Windows.MessageBoxResult)MessageBox.Show("Press OK to restart, or Cancel to suspend the action", "Remote Restart", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    if (confirmResult == System.Windows.MessageBoxResult.Cancel)
+                    {
+                        Process.Start("shutdown.exe", "-a");
+                    }
                 }
                 ready = true;
             });

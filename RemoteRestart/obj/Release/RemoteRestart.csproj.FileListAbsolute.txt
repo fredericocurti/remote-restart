@@ -44,3 +44,4 @@ C:\Users\frede\Desktop\RemoteRestart\RemoteRestart\obj\Release\RemoteRestart.csp
 C:\Users\frede\Desktop\RemoteRestart\RemoteRestart\obj\Release\RemoteRestart.csproj.CopyComplete
 C:\Users\frede\Desktop\RemoteRestart\RemoteRestart\obj\Release\RemoteRestart.exe
 C:\Users\frede\Desktop\RemoteRestart\RemoteRestart\obj\Release\RemoteRestart.pdb
+C:\Users\frede\Desktop\RemoteRestart\RemoteRestart\obj\Release\RemoteRestart.Resource.resources
