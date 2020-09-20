@@ -4,6 +4,8 @@ using FireSharp.Interfaces;
 using FireSharp.Response;
 using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,7 +26,7 @@ namespace RemoteRestart
             var menu = new ContextMenu();
             var mnuExit = new MenuItem("Exit");
             menu.MenuItems.Add(0, mnuExit);
-            mnuExit.Click += new EventHandler(mnuExit_Click);
+            mnuExit.Click += new EventHandler(MMenuExit_Click);
 
             Icon.ContextMenu = menu;
             Icon.Text = $"Remote Restart\nStatus: Running";
@@ -37,7 +39,7 @@ namespace RemoteRestart
             Icon.Dispose();
         }
 
-        static void mnuExit_Click(object sender, EventArgs e)
+        static void MMenuExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
             Process.GetCurrentProcess().Kill();
@@ -50,6 +52,11 @@ namespace RemoteRestart
         public static string Path { get; set; } = $"clients/{Environment.MachineName}";
 
         public static ProcessIcon Pi { get; set; } = null;
+
+        public static EventStreamResponse handler;
+
+        public static Task runner;
+        public static Task pinger;
 
         static void Main(string[] args)
         {
@@ -76,41 +83,73 @@ namespace RemoteRestart
             notifyThread.Start();
 
             Init();
-            Run();
-            Ping().Wait();
+            runner = Run();
+            pinger = Ping();
         }
 
 
         private static void Init()
         {
-            var exists = Client.Get($"{Path}/lastRestart").Body == "null";
-            if (exists)
+            try
             {
-                Client.Set($"{Path}/lastRestart", "never");
+                var exists = Client.Get($"{Path}/lastRestart").Body == "null";
+                if (exists)
+                {
+                    Client.Set($"{Path}/lastRestart", "never");
+                }
+                Client.Set($"{Path}/version", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            }
+            catch
+            {
+                Pi.Icon.Icon = SystemIcons.Error;
+                Thread.Sleep(10000);
+                Init();
             }
         }
 
         private static async Task Ping()
         {
+            int pingCount = 0;
+            Pi.Icon.Icon = RemoteRestart.Resource.Icon;
             while (true)
             {
-                await Client.SetAsync($"{Path}/lastPing", DateTime.Now);
-                Pi.Icon.Text = $"Remote Restart\nStatus: Running\nLast Ping: {DateTime.Now}";
-                Thread.Sleep(30000);
+                pingCount++;
+                try
+                {
+                    await Client.SetAsync($"{Path}/lastPing", DateTime.Now);
+                    Pi.Icon.Text = $"Remote Restart\nStatus: Running\nLast Ping: {DateTime.Now}";
+
+                    if (pingCount == 10)
+                    {
+                        pingCount = 0;
+                        handler.Dispose();
+                         runner.Dispose();
+                        runner = Run();
+                    }
+
+                }
+                catch
+                {
+                    Pi.Icon.Icon = SystemIcons.Error;
+                }
+                finally
+                {
+                    Thread.Sleep(30000);
+                }
             }
         }
 
-
         private static async Task Run()
         {
-
             bool ready = false;
-            EventStreamResponse response = await Client.OnAsync($"{Path}/lastRestart", null, (sender, args, context) => {
+            handler = await Client.OnAsync($"{Path}/lastRestart", null, (sender, args, context) =>
+            {
+
                 if (ready)
                 {
                     Process.Start("shutdown.exe", "-r -f -t 12");
                     Thread.Sleep(2000);
-                    System.Windows.MessageBoxResult confirmResult = (System.Windows.MessageBoxResult)MessageBox.Show("Press OK to restart, or Cancel to suspend the action", "Remote Restart", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    System.Windows.MessageBoxResult confirmResult = (System.Windows.MessageBoxResult)MessageBox.Show("Press OK to Restart, or Cancel to suspend the action", "Remote Restart", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                     if (confirmResult == System.Windows.MessageBoxResult.Cancel)
                     {
                         Process.Start("shutdown.exe", "-a");
