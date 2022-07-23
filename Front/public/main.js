@@ -1,57 +1,77 @@
 let clientsDiv
+let form
+let clients = []
 
-const onClickBtn = (client) => {
-    if (window.confirm(`Are you sure you want to restart ${client}?`)) {
-        const date = new Date()
-        firebase.database().ref(`/clients/${client}/lastRestart`).set(date.toJSON())
-        update()
-    }
+const onClickRestart = (id, machineName) => {
+  if (window.confirm(`Are you sure you want to restart ${machineName}?`)) {
+    const date = new Date()
+    firebase.database().ref(`/clients/${id}/lastRestart`).set(date.toJSON())
+    update()
+  }
 }
 
 const update = () => {
-    firebase.database().ref('/clients').once('value', snapshot => {
-        clientsDiv.innerHTML = ""
-        Object.entries(snapshot.val()).map(([client, val]) => {
-            const { lastPing, lastRestart } = val
+  clients = JSON.parse(localStorage.getItem("clients") ?? "[]")
 
-            const deltaMinutes = (new Date() - new Date(lastPing)) / 60000
+  clients.forEach((id) => {
+    firebase.database().ref(`/clients/${id}`).once("value", (snapshot) => {
+      const client = snapshot.val()
+      if (!client) return;
 
-            let status = "ONLINE"
-            if (deltaMinutes > 1) {
-                status = "OFFLINE"
-            }
+      const { lastPing, lastRestart, machineName } = client
+      const deltaMinutes = (new Date() - new Date(lastPing)) / 60000
+      let status = deltaMinutes > 1 ? "OFFLINE" : "ONLINE"
 
-            clientsDiv.innerHTML += `
-            <span class="card">
-                <div><span>${status === "ONLINE" ? "💚" : "🔴"}</span><b> ${client} (${status})</b></div>
-                <div class="divider"></div>
-                Last Ping ${new Date(lastPing).toGMTString()}<br>
-                Last Restart ${lastRestart === "never" ? "never" : new Date(lastRestart).toGMTString()}<br>
-                <button onclick="onClickBtn('${client}')"> Restart </button>
-            </span>
-            `
-            if (status === "OFFLINE") {
-                clientsDiv.lastElementChild.lastElementChild.remove()
-            }
-        })
+      const prev = document.getElementById(id)
+      if (prev) {
+        prev.parentNode.removeChild(prev)
+      }
+
+      clientsDiv.innerHTML += `
+        <span class="card" id="${id}">
+            <div><span>${status === "ONLINE" ? "💚" : "🔴"}</span><b> ${machineName} - ${id} (${status})</b></div>
+            <div class="divider"></div>
+            Last Ping ${new Date(lastPing).toGMTString()}<br>
+            Last Restart ${lastRestart === "never" ? "never" : new Date(lastRestart).toGMTString()}<br>
+            <button onclick="onClickRestart('${id}', '${machineName}')"> Restart </button>
+        </span>
+        `
+
+      if (status === "OFFLINE") {
+        clientsDiv.lastElementChild.lastElementChild.remove()
+      }
+
+      document.querySelector(".lds-dual-ring").style.display = "none";
     })
+  })
+}
+
+const onAddClient = (ev) => {
+  const newId = ev.target[0].value.toLowerCase()
+  if (newId.length !== 6) {
+    window.alert("Client ID must be 6 characters long")
+    return;
+  }
+  
+  localStorage.setItem("clients", JSON.stringify(Array.from(new Set([...clients, newId]))))
+  ev.target[0].value = ""
+  update()
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    clientsDiv = document.querySelector("#clients")
-    // // The Firebase SDK is initialized and available here!
-    update()
-    setInterval(update, 5000)
-    document.querySelectorAll("button").forEach(b => b.addEventListener("click", (ev) => { }))
+  clientsDiv = document.querySelector("#clients")
+  form = document.getElementById("form")
 
-    try {
-        let app = firebase.app();
-        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
-        // document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
-        document.getElementById('load').innerHTML = ""
+  update()
+  setInterval(update, 10000)
 
-    } catch (e) {
-        console.error(e);
-        document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
-    }
+  form.addEventListener("submit", onAddClient)
+
+  try {
+    firebase.app();
+    document.getElementById('load').innerHTML = ""
+  } catch (e) {
+    console.error(e);
+    document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+  }
 });

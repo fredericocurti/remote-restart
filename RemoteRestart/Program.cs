@@ -5,6 +5,7 @@ using FireSharp.Response;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,9 +25,14 @@ namespace RemoteRestart
         public void Display()
         {
             var menu = new ContextMenu();
+
+            var menuCopy = new MenuItem($"Copy ID to Clipboard ({Program.clientId})");
+            menuCopy.Click += new EventHandler(MMenuCopy_Click);
+            menu.MenuItems.Add(0, menuCopy);
+
             var mnuExit = new MenuItem("Exit");
-            menu.MenuItems.Add(0, mnuExit);
             mnuExit.Click += new EventHandler(MMenuExit_Click);
+            menu.MenuItems.Add(1, mnuExit);
 
             Icon.ContextMenu = menu;
             Icon.Text = $"Remote Restart\nStatus: Running";
@@ -44,12 +50,22 @@ namespace RemoteRestart
             Application.Exit();
             Process.GetCurrentProcess().Kill();
         }
+
+        static void MMenuCopy_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Clipboard.SetData(DataFormats.Text, Program.clientId);
+            } catch {}
+        }
     }
 
     class Program
     {
         public static IFirebaseClient Client { get; set; }
-        public static string Path { get; set; } = $"clients/{Environment.MachineName}";
+
+        public static string clientId;
+        public static string Path { get => $"clients/{clientId}"; set { Path = ""; }}
 
         public static ProcessIcon Pi { get; set; } = null;
 
@@ -57,6 +73,8 @@ namespace RemoteRestart
 
         public static Task runner;
         public static Task pinger;
+
+
 
         static void Main(string[] args)
         {
@@ -79,7 +97,9 @@ namespace RemoteRestart
             }
             );
 
+            clientId = Generator.GetUniqueId();
 
+            notifyThread.SetApartmentState(ApartmentState.STA);
             notifyThread.Start();
 
             Init();
@@ -98,6 +118,7 @@ namespace RemoteRestart
                     Client.Set($"{Path}/lastRestart", "never");
                 }
                 Client.Set($"{Path}/version", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                Client.Set($"{Path}/machineName", Environment.MachineName);
             }
             catch
             {
@@ -117,19 +138,20 @@ namespace RemoteRestart
                 try
                 {
                     await Client.SetAsync($"{Path}/lastPing", DateTime.Now);
-                    Pi.Icon.Text = $"Remote Restart\nStatus: Running\nLast Ping: {DateTime.Now}";
+                    Pi.Icon.Text = $"Remote Restart\nClient Id: {clientId}";
 
                     if (pingCount == 10)
                     {
                         pingCount = 0;
                         handler.Dispose();
-                         runner.Dispose();
+                        runner.Dispose();
                         runner = Run();
                     }
 
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     Pi.Icon.Icon = SystemIcons.Error;
                 }
                 finally

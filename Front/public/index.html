@@ -1,114 +1,31 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Remote Restart</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Remote Restart</title>
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.19.1/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/7.19.1/firebase-auth.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-database.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <link rel="icon" type="image/png" href="./favicon.png" />
+    <link rel="stylesheet" href="main.css" />
+  </head>
 
-  <!-- update the version number as needed -->
-  <script defer src="/__/firebase/7.19.1/firebase-app.js"></script>
-  <!-- include only the Firebase features as you need -->
-  <script defer src="/__/firebase/7.19.1/firebase-auth.js"></script>
-  <script defer src="/__/firebase/7.19.1/firebase-database.js"></script>
-  <!-- initialize the SDK after all desired features are loaded -->
-  <script defer src="/__/firebase/init.js"></script>
-  <link rel="icon" type="image/png" href="./favicon.png"/>
-  <style media="screen">
-    * {
-      color: white;
-    }
+  <body>
+    <p id="load"></p>
+    <h1><img src="./favicon.png" height="24" /> Remote Restart</h1>
 
-    .lds-dual-ring {
-      display: inline-block;
-      margin: 0 auto;
-      width: 80px;
-      height: 80px;
-    }
-
-    .lds-dual-ring:after {
-      content: " ";
-      display: block;
-      width: 64px;
-      height: 64px;
-      margin: 8px;
-      border-radius: 50%;
-      border: 6px solid #fff;
-      border-color: #fff transparent #fff transparent;
-      animation: lds-dual-ring 1.2s linear infinite;
-    }
-
-    @keyframes lds-dual-ring {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-
-    body {
-      background: #242424;
-      color: rgba(0, 0, 0, 0.87);
-      font-family: Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    @media (max-width: 375px) {
-
-      body,
-      #message {
-        margin-top: 0;
-        box-shadow: none;
-      }
-    }
-
-    h1 {
-      padding: 20px;
-    }
-
-    .card {
-      padding: 20px;
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
-      background: #303030;
-      display: flex;
-      flex-direction: column;
-      font-size: 10pt;
-      flex: 1;
-      margin: 10px;
-      min-width: 300px;
-      max-width: 300px;
-      border-radius: 10px;
-    }
-
-    #clients {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-
-    button {
-      margin-top: 10px;
-      max-width: 100px;
-      align-self: flex-end;
-      background: black;
-    }
-
-    .divider {
-      border-bottom: 1px solid #c9c9c9;
-      margin: 10px 0;
-    }
-  </style>
-</head>
-
-<body>
-  <p id="load"></p>
-  <h1> <img src="./favicon.png" height="24"/> Remote Restart </h1>
-  <div id="clients"><div class="lds-dual-ring"></div></div>
-  <script src="./main.js"></script>
-</body>
-
+    <form class="form__group" id="form" onsubmit="return false;">
+      <input type="text" class="form__input" id="name" placeholder="Add Client Id" required="" />
+      <input style="display: none;" type="submit" class="form__submit" value="Restart" ></button>
+    </form>
+    
+    <div id="clients"><div class="lds-dual-ring"></div></div>
+    <script src="./main.js"></script>
+  </body>
 </html>

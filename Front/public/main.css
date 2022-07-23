@@ -1,0 +1,123 @@
+* {
+  color: white;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  margin: 0 auto;
+  width: 80px;
+  height: 80px;
+}
+
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  background: #242424;
+  color: rgba(0, 0, 0, 0.87);
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 375px) {
+  body,
+  #message {
+    margin-top: 0;
+    box-shadow: none;
+  }
+}
+
+h1 {
+  padding: 20px;
+}
+
+.card {
+  padding: 20px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
+  background: #303030;
+  display: flex;
+  flex-direction: column;
+  font-size: 10pt;
+  flex: 1;
+  margin: 10px;
+  min-width: 300px;
+  max-width: 300px;
+  border-radius: 10px;
+}
+
+#clients {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+button {
+  margin-top: 10px;
+  max-width: 100px;
+  align-self: flex-end;
+  background: black;
+  border-radius: 10px;
+  padding: 4px 12px;
+}
+
+.divider {
+  border-bottom: 1px solid #c9c9c9;
+  margin: 10px 0;
+}
+
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+  font-size: 62,5%;
+}
+
+.form__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+  margin-left: 2rem;
+  margin-top: 0.7rem;
+  display: block;
+  transition: all 0.3s;
+  transform: translateY(0rem);
+}
+
+.form__input {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  font-size: 1.2rem;
+	margin: 0 auto;
+  padding: 1rem 1.5rem;
+  border-radius: 0.2rem;
+  background-color: rgb(255, 255, 255);
+  border: none;
+  width: 30%;
+  display: block;
+  border-bottom: 0.3rem solid transparent;
+  transition: all 0.3s;
+  margin-bottom: 24px;
+  filter: invert();
+}
